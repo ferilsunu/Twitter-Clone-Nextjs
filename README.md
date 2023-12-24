@@ -12,7 +12,7 @@ Twitter clone built with Next.js, React, and Tailwind CSS.
 
 ## Demo
 
-Check out the live demo [here](#) 
+Check out the live demo [here](https://twitter-clone-feril.netlify.app/) 
 
 ## Local Setup
 
@@ -44,4 +44,9 @@ NEXTAUTH_SECRET=""
 ```
 npm run dev
 ```
+
+
+## Screenshots
+
+![App Screenshot](https://i.ibb.co/QcYhrTF/image.png)
 
