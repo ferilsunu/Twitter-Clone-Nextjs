@@ -1,62 +1,63 @@
 import { NextApiRequest, NextApiResponse } from "next";
-
-import prisma from '@/libs/prismadb';
+import prisma from "@/libs/prismadb";
 import serverAuth from "@/libs/serverAuth";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST' && req.method !== 'DELETE') {
-    return res.status(405).end();
+  if (req.method !== "POST" && req.method !== "DELETE") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
     const { userId } = req.body;
-
     const { currentUser } = await serverAuth(req, res);
 
-    if (!userId || typeof userId !== 'string') {
-      throw new Error('Invalid ID');
+    if (!userId || typeof userId !== "string") {
+      return res.status(400).json({ error: "Invalid user ID" });
     }
 
-    const user = await prisma.user.findUnique({
+    if (currentUser.id === userId) {
+      return res.status(400).json({ error: "Cannot follow yourself" });
+    }
+
+    const targetUser = await prisma.user.findUnique({
       where: {
         id: userId
       }
     });
 
-    if (!user) {
-      throw new Error('Invalid ID');
+    if (!targetUser) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    let updatedFollowingIds = [...(user.followingIds || [])];
+    let updatedFollowingIds = [...(currentUser.followingIds || [])];
 
-    if (req.method === 'POST') {
-      updatedFollowingIds.push(userId);
+    if (req.method === "POST") {
+      if (!updatedFollowingIds.includes(userId)) {
+        updatedFollowingIds.push(userId);
 
-      // NOTIFICATION PART START
-      try {
-        await prisma.notification.create({
-          data: {
-            body: 'Someone followed you!',
-            userId,
-          },
-        });
+        try {
+          await prisma.notification.create({
+            data: {
+              body: `@${currentUser.username || "Someone"} followed you!`,
+              userId,
+            },
+          });
 
-        await prisma.user.update({
-          where: {
-            id: userId,
-          },
-          data: {
-            hasNotification: true,
-          }
-        });
-      } catch (error) {
-        console.log(error);
+          await prisma.user.update({
+            where: {
+              id: userId,
+            },
+            data: {
+              hasNotification: true,
+            }
+          });
+        } catch (error) {
+          console.error("Notification error:", error);
+        }
       }
-      // NOTIFICATION PART END
-      
     }
 
-    if (req.method === 'DELETE') {
+    if (req.method === "DELETE") {
       updatedFollowingIds = updatedFollowingIds.filter((followingId) => followingId !== userId);
     }
 
@@ -69,9 +70,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     });
 
-    return res.status(200).json(updatedUser);
+    const { hashedPassword, ...safeUser } = updatedUser;
+
+    return res.status(200).json(safeUser);
   } catch (error) {
-    console.log(error);
-    return res.status(400).end();
+    console.error("Follow error:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
