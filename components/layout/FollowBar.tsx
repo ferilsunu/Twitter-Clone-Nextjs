@@ -130,10 +130,6 @@ const FollowBar = () => {
           <a href="https://github.com/ferilsunu/Twitter-Clone-Nextjs" target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub</a>
           <span>·</span>
           <a href="https://ferilsunu.com" target="_blank" rel="noopener noreferrer" className="hover:underline">Portfolio</a>
-          <span>·</span>
-          <span>Privacy Policy</span>
-          <span>·</span>
-          <span>Terms of Service</span>
         </div>
         <p className="pt-1">© 2026 Twitter Clone by Feril Sunu</p>
       </footer>
