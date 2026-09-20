@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { ClipLoader } from "react-spinners";
 
 import useUser from "@/hooks/useUser";
 import usePosts from "@/hooks/usePosts";
@@ -8,19 +7,23 @@ import PostFeed from "@/components/posts/PostFeed";
 import Header from "@/components/Header";
 import UserBio from "@/components/users/UserBio";
 import UserHero from "@/components/users/UserHero";
+import ProfileSkeleton from "@/components/skeletons/ProfileSkeleton";
 
 const UserView = () => {
   const router = useRouter();
   const { userId } = router.query;
 
-  const { data: fetchedUser, isLoading } = useUser(userId as string);
+  const { data: fetchedUser, isLoading: isUserLoading } = useUser(userId as string);
   const { data: userPosts = [] } = usePosts(userId as string);
 
-  if (isLoading || !fetchedUser) {
+  if (isUserLoading || !fetchedUser) {
     return (
-      <div className="flex flex-col justify-center items-center h-64 space-y-3">
-        <ClipLoader color="#0284c7" size={40} />
-      </div>
+      <>
+        <Head>
+          <title>Profile / Twitter</title>
+        </Head>
+        <ProfileSkeleton />
+      </>
     );
   }
 

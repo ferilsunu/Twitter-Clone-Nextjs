@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { ClipLoader } from "react-spinners";
 
 import usePost from "@/hooks/usePost";
 import Header from "@/components/Header";
 import Form from "@/components/Form";
 import PostItem from "@/components/posts/PostItem";
 import CommentFeed from "@/components/posts/CommentFeed";
+import PostViewSkeleton from "@/components/skeletons/PostViewSkeleton";
 
 const PostView = () => {
   const router = useRouter();
@@ -16,9 +16,12 @@ const PostView = () => {
 
   if (isLoading || !fetchedPost) {
     return (
-      <div className="flex flex-col justify-center items-center h-64 space-y-3">
-        <ClipLoader color="#0284c7" size={40} />
-      </div>
+      <>
+        <Head>
+          <title>Post / Twitter</title>
+        </Head>
+        <PostViewSkeleton />
+      </>
     );
   }
 

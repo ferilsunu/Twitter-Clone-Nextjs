@@ -38,10 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             select: userSafeSelect
           },
           comments: {
-            include: {
-              user: {
-                select: userSafeSelect
-              }
+            select: {
+              id: true
             }
           }
         }
@@ -52,6 +50,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method === "GET") {
       const { userId } = req.query;
+
+      res.setHeader('Cache-Control', 's-maxage=2, stale-while-revalidate=10');
 
       let posts;
 
@@ -65,16 +65,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               select: userSafeSelect
             },
             comments: {
-              include: {
-                user: {
-                  select: userSafeSelect
-                }
+              select: {
+                id: true
               }
             }
           },
           orderBy: {
             createdAt: "desc"
           },
+          take: 60,
         });
       } else {
         posts = await prisma.post.findMany({
@@ -83,16 +82,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               select: userSafeSelect
             },
             comments: {
-              include: {
-                user: {
-                  select: userSafeSelect
-                }
+              select: {
+                id: true
               }
             }
           },
           orderBy: {
             createdAt: "desc"
-          }
+          },
+          take: 80,
         });
       }
 
