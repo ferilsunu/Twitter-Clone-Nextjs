@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { BiCalendar } from "react-icons/bi";
 import { format } from "date-fns";
 
@@ -16,75 +16,174 @@ interface UserBioProps {
 const UserBio: React.FC<UserBioProps> = ({ userId }) => {
   const { data: currentUser } = useCurrentUser();
   const { data: fetchedUser } = useUser(userId);
-
   const editModal = useEditModal();
-
   const { isFollowing, toggleFollow } = useFollow(userId);
+  const [activeTab, setActiveTab] = useState<'posts' | 'replies' | 'likes'>('posts');
 
   const createdAt = useMemo(() => {
     if (!fetchedUser?.createdAt) {
       return null;
     }
-
     return format(new Date(fetchedUser.createdAt), 'MMMM yyyy');
-  }, [fetchedUser?.createdAt])
+  }, [fetchedUser?.createdAt]);
 
+  const isSelf = currentUser?.id === userId;
 
-  return ( 
-    <div className="border-b-[1px] border-neutral-200 dark:border-neutral-800 pb-4 transition-colors">
-      <div className="flex justify-end p-2">
-        {currentUser?.id === userId ? (
-          <Button secondary label="Edit" onClick={editModal.onOpen} />
+  return (
+    <div className="border-b border-neutral-200 dark:border-neutral-800 transition-colors">
+      {/* Top Action Button Row (aligned right next to avatar) */}
+      <div className="flex justify-end px-4 pt-3 pb-1">
+        {isSelf ? (
+          <button
+            onClick={editModal.onOpen}
+            className="
+              font-bold 
+              text-sm 
+              px-5 
+              py-1.5 
+              rounded-full 
+              border 
+              border-neutral-300 
+              dark:border-neutral-700 
+              text-neutral-900 
+              dark:text-white 
+              hover:bg-neutral-100 
+              dark:hover:bg-neutral-800 
+              active:scale-95 
+              transition
+          ">
+            Edit profile
+          </button>
         ) : (
-          <Button
-            onClick={toggleFollow} 
-            label={isFollowing ? 'Unfollow' : 'Follow'}
-            secondary={!isFollowing}
-            outline={isFollowing}
-          />
+          <button
+            onClick={toggleFollow}
+            className={`
+              font-bold 
+              text-sm 
+              px-5 
+              py-1.5 
+              rounded-full 
+              transition 
+              active:scale-95
+              ${isFollowing
+                ? 'border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-500 hover:text-red-500 hover:bg-red-500/10'
+                : 'bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90'
+              }
+            `}
+          >
+            {isFollowing ? 'Following' : 'Follow'}
+          </button>
         )}
       </div>
-      <div className="mt-8 px-4">
+
+      {/* User Info Details */}
+      <div className="mt-8 sm:mt-10 px-4 sm:px-6">
         <div className="flex flex-col">
-          <p className="text-neutral-900 dark:text-white text-2xl font-bold">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
             {fetchedUser?.name}
-          </p>
-          <p className="text-md text-neutral-500">
+          </h2>
+          <p className="text-neutral-500 text-sm">
             @{fetchedUser?.username}
           </p>
         </div>
-        <div className="flex flex-col mt-4">
-          <p className="text-neutral-800 dark:text-neutral-200">
-            {fetchedUser?.bio}
+
+        {/* Bio */}
+        {fetchedUser?.bio && (
+          <p className="mt-3 text-neutral-800 dark:text-neutral-200 text-[15px] leading-relaxed break-words whitespace-pre-line">
+            {fetchedUser.bio}
           </p>
-          <div 
-            className="
-              flex 
-              flex-row 
-              items-center 
-              gap-2 
-              mt-4 
-              text-neutral-500
-          ">
-            <BiCalendar size={22} />
-            <p className="text-sm">
-              Joined {createdAt}
-            </p>
-          </div>
+        )}
+
+        {/* Joined Date */}
+        <div className="flex items-center gap-1.5 mt-3 text-neutral-500 text-sm">
+          <BiCalendar size={18} />
+          <span>Joined {createdAt}</span>
         </div>
-        <div className="flex flex-row items-center mt-4 gap-6">
-          <div className="flex flex-row items-center gap-1">
-            <p className="text-neutral-900 dark:text-white font-bold">{fetchedUser?.followingIds?.length || 0}</p>
-            <p className="text-neutral-500 text-sm">Following</p>
+
+        {/* Follower Stats */}
+        <div className="flex items-center gap-5 mt-3.5 pb-4 text-sm">
+          <div className="flex items-center gap-1 hover:underline cursor-pointer">
+            <span className="font-bold text-neutral-900 dark:text-white">
+              {fetchedUser?.followingIds?.length || 0}
+            </span>
+            <span className="text-neutral-500">Following</span>
           </div>
-          <div className="flex flex-row items-center gap-1">
-            <p className="text-neutral-900 dark:text-white font-bold">{fetchedUser?.followersCount || 0}</p>
-            <p className="text-neutral-500 text-sm">Followers</p>
+          <div className="flex items-center gap-1 hover:underline cursor-pointer">
+            <span className="font-bold text-neutral-900 dark:text-white">
+              {fetchedUser?.followersCount || 0}
+            </span>
+            <span className="text-neutral-500">Followers</span>
           </div>
         </div>
       </div>
+
+      {/* Profile Interactive Tabs */}
+      <div className="flex border-t border-neutral-200 dark:border-neutral-800 mt-1">
+        <button
+          onClick={() => setActiveTab('posts')}
+          className={`
+            flex-1 
+            py-3.5 
+            text-center 
+            text-sm 
+            font-bold 
+            transition 
+            hover:bg-neutral-100/60 
+            dark:hover:bg-neutral-800/40 
+            relative
+            ${activeTab === 'posts' ? 'text-neutral-900 dark:text-white' : 'text-neutral-500'}
+          `}
+        >
+          <span>Posts</span>
+          {activeTab === 'posts' && (
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-sky-500 rounded-full" />
+          )}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('replies')}
+          className={`
+            flex-1 
+            py-3.5 
+            text-center 
+            text-sm 
+            font-bold 
+            transition 
+            hover:bg-neutral-100/60 
+            dark:hover:bg-neutral-800/40 
+            relative
+            ${activeTab === 'replies' ? 'text-neutral-900 dark:text-white' : 'text-neutral-500'}
+          `}
+        >
+          <span>Replies</span>
+          {activeTab === 'replies' && (
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-sky-500 rounded-full" />
+          )}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('likes')}
+          className={`
+            flex-1 
+            py-3.5 
+            text-center 
+            text-sm 
+            font-bold 
+            transition 
+            hover:bg-neutral-100/60 
+            dark:hover:bg-neutral-800/40 
+            relative
+            ${activeTab === 'likes' ? 'text-neutral-900 dark:text-white' : 'text-neutral-500'}
+          `}
+        >
+          <span>Likes</span>
+          {activeTab === 'likes' && (
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-sky-500 rounded-full" />
+          )}
+        </button>
+      </div>
     </div>
-   );
-}
- 
+  );
+};
+
 export default UserBio;

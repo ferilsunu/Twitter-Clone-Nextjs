@@ -22,11 +22,11 @@ const EditModal = () => {
   const [bio, setBio] = useState('');
 
   useEffect(() => {
-    setProfileImage(currentUser?.profileImage)
-    setCoverImage(currentUser?.coverImage)
-    setName(currentUser?.name)
-    setUsername(currentUser?.username)
-    setBio(currentUser?.bio)
+    setProfileImage(currentUser?.profileImage || '');
+    setCoverImage(currentUser?.coverImage || '');
+    setName(currentUser?.name || '');
+    setUsername(currentUser?.username || '');
+    setBio(currentUser?.bio || '');
   }, [currentUser?.name, currentUser?.username, currentUser?.bio, currentUser?.profileImage, currentUser?.coverImage]);
   
   const [isLoading, setIsLoading] = useState(false);
@@ -38,8 +38,7 @@ const EditModal = () => {
       await axios.patch('/api/edit', { name, username, bio, profileImage, coverImage });
       mutateFetchedUser();
 
-      toast.success('Updated');
-
+      toast.success('Profile updated');
       editModal.onClose();
     } catch (error) {
       toast.error('Something went wrong');
@@ -49,41 +48,52 @@ const EditModal = () => {
   }, [editModal, name, username, bio, mutateFetchedUser, profileImage, coverImage]);
 
   const bodyContent = (
-    <div className="flex flex-col gap-4">
-      <ImageUpload value={profileImage} disabled={isLoading} onChange={(image) => setProfileImage(image)} label="Upload profile image" />
-      <ImageUpload value={coverImage} disabled={isLoading} onChange={(image) => setCoverImage(image)} label="Upload cover image" />
+    <div className="flex flex-col gap-4 max-h-[60vh] overflow-y-auto pr-1">
+      <div className="space-y-1">
+        <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Profile Photo</label>
+        <ImageUpload value={profileImage} disabled={isLoading} onChange={(image) => setProfileImage(image)} label="Upload profile photo" />
+      </div>
+
+      <div className="space-y-1">
+        <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Header Banner</label>
+        <ImageUpload value={coverImage} disabled={isLoading} onChange={(image) => setCoverImage(image)} label="Upload header banner" />
+      </div>
+
       <Input
-        placeholder="Name"
+        label="Name"
+        placeholder="Your name"
         onChange={(e) => setName(e.target.value)}
         value={name}
         disabled={isLoading}  
       />
       <Input 
-        placeholder="Username"
+        label="Username"
+        placeholder="Your username"
         onChange={(e) => setUsername(e.target.value)}
         value={username}
         disabled={isLoading} 
       />
       <Input 
-        placeholder="Bio"
+        label="Bio"
+        placeholder="Tell the world about yourself"
         onChange={(e) => setBio(e.target.value)}
         value={bio}
         disabled={isLoading} 
       />
     </div>
-  )
+  );
 
   return (
     <Modal
       disabled={isLoading}
       isOpen={editModal.isOpen}
-      title="Edit your profile"
-      actionLabel="Save"
+      title="Edit profile"
+      actionLabel={isLoading ? "Saving..." : "Save"}
       onClose={editModal.onClose}
       onSubmit={onSubmit}
       body={bodyContent}
     />
   );
-}
+};
 
 export default EditModal;

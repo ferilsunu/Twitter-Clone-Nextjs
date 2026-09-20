@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import { IconType } from "react-icons";
 import { useRouter } from 'next/router';
+import { BsDot } from 'react-icons/bs';
 
 import useLoginModal from '@/hooks/useLoginModal';
 import useCurrentUser from '@/hooks/useCurrentUser';
-import { BsDot } from 'react-icons/bs';
 
 interface SidebarItemProps {
   label: string;
@@ -18,7 +18,6 @@ interface SidebarItemProps {
 const SidebarItem: React.FC<SidebarItemProps> = ({ label, icon: Icon, href, auth, onClick, alert }) => {
   const router = useRouter();
   const loginModal = useLoginModal();
-
   const { data: currentUser } = useCurrentUser();
 
   const handleClick = useCallback(() => {
@@ -33,50 +32,58 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ label, icon: Icon, href, auth
     }
   }, [router, href, auth, loginModal, onClick, currentUser]);
 
+  const isActive = href && router.pathname === href;
+
   return (
-    <div onClick={handleClick} className="flex flex-row items-center">
-      <div className="
-        relative
-        rounded-full 
-        h-14
-        w-14
-        flex
-        items-center
+    <div 
+      onClick={handleClick}
+      className="
+        group 
+        flex 
+        items-center 
         justify-center 
-        p-4
-        hover:bg-neutral-200 
-        dark:hover:bg-neutral-800 
-        dark:hover:bg-opacity-50 
-        cursor-pointer 
-        lg:hidden
-        transition
-      ">
-        <Icon size={28} className="text-neutral-900 dark:text-white" />
-        {alert ? <BsDot className="text-sky-500 absolute -top-4 left-0" size={70} /> : null}
-      </div>
-      <div className="
-        relative
-        hidden 
-        lg:flex 
-        items-row 
-        gap-4 
-        p-4 
-        rounded-full 
-        hover:bg-neutral-200 
-        dark:hover:bg-neutral-800 
-        dark:hover:bg-opacity-50 
+        xl:justify-start 
+        w-full 
         cursor-pointer
-        items-center
-        transition
-      ">
-        <Icon size={24} className="text-neutral-900 dark:text-white" />
-        <p className="hidden lg:block text-neutral-900 dark:text-white text-xl font-medium">
+    ">
+      <div className={`
+        relative 
+        flex 
+        items-center 
+        gap-4 
+        p-3 
+        rounded-full 
+        transition-all 
+        duration-150
+        group-hover:bg-neutral-100 
+        dark:group-hover:bg-neutral-900
+        group-active:scale-95
+        ${isActive ? 'font-bold' : 'font-medium'}
+      `}>
+        <div className="relative flex items-center justify-center">
+          <Icon 
+            size={24} 
+            className={`
+              transition-colors 
+              ${isActive ? 'text-sky-500' : 'text-neutral-900 dark:text-white group-hover:text-sky-500'}
+            `} 
+          />
+          {alert && (
+            <BsDot className="text-sky-500 absolute -top-4 -right-4 animate-pulse" size={48} />
+          )}
+        </div>
+        <p className={`
+          hidden 
+          xl:block 
+          text-lg 
+          tracking-tight 
+          ${isActive ? 'text-sky-500 font-bold' : 'text-neutral-900 dark:text-white group-hover:text-sky-500'}
+        `}>
           {label}
         </p>
-        {alert ? <BsDot className="text-sky-500 absolute -top-4 left-0" size={70} /> : null}
       </div>
     </div>
   );
-}
+};
 
 export default SidebarItem;

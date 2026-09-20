@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { BsImage, BsEmojiSmile, BsCalendarEvent, BsGeoAlt } from 'react-icons/bs';
 
 import useLoginModal from '@/hooks/useLoginModal';
 import useRegisterModal from '@/hooks/useRegisterModal';
@@ -29,6 +30,8 @@ const Form: React.FC<FormProps> = ({ placeholder, isComment, postId }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = useCallback(async () => {
+    if (!body.trim()) return;
+
     try {
       setIsLoading(true);
 
@@ -36,7 +39,7 @@ const Form: React.FC<FormProps> = ({ placeholder, isComment, postId }) => {
 
       await axios.post(url, { body });
 
-      toast.success('Tweet created');
+      toast.success(isComment ? 'Reply posted' : 'Post published');
       setBody('');
       mutatePosts();
       mutatePost();
@@ -48,55 +51,105 @@ const Form: React.FC<FormProps> = ({ placeholder, isComment, postId }) => {
   }, [body, mutatePosts, isComment, postId, mutatePost]);
 
   return (
-    <div className="border-b-[1px] border-neutral-200 dark:border-neutral-800 px-5 py-3 transition-colors">
+    <div className="border-b border-neutral-200 dark:border-neutral-800 px-4 py-3 sm:px-5 sm:py-4 transition-colors">
       {currentUser ? (
-        <div className="flex flex-row gap-4">
-          <div>
-            <Avatar userId={currentUser?.id} />
+        <div className="flex gap-3 sm:gap-4">
+          <div className="flex-shrink-0 pt-1">
+            <Avatar userId={currentUser.id} />
           </div>
-          <div className="w-full">
+
+          <div className="flex-1 min-w-0">
             <textarea
               disabled={isLoading}
-              onChange={(event) => setBody(event.target.value)}
+              onChange={(e) => setBody(e.target.value)}
               value={body}
+              rows={isComment ? 2 : 3}
               className="
-                disabled:opacity-80
-                peer
+                w-full 
+                bg-transparent 
                 resize-none 
-                mt-3 
-                w-full 
-                bg-transparent
-                ring-0 
                 outline-none 
-                text-[20px] 
-                placeholder-neutral-400
-                dark:placeholder-neutral-500 
-                text-neutral-900
-                dark:text-white
+                text-base 
+                sm:text-lg 
+                placeholder-neutral-500 
+                text-neutral-900 
+                dark:text-white 
+                disabled:opacity-60
+                leading-relaxed
               "
-              placeholder={placeholder}>
-            </textarea>
-            <hr 
-              className="
-                opacity-0 
-                peer-focus:opacity-100 
-                h-[1px] 
-                w-full 
-                border-neutral-200
-                dark:border-neutral-800 
-                transition"
+              placeholder={placeholder}
             />
-            <div className="mt-4 flex flex-row justify-end">
-              <Button disabled={isLoading || !body} onClick={onSubmit} label="Tweet" />
+
+            <div className="flex items-center justify-between pt-3 border-t border-neutral-100 dark:border-neutral-800/80">
+              {/* Media Action Icons */}
+              <div className="flex items-center gap-1 sm:gap-2 -ml-2 text-sky-500">
+                <button
+                  type="button"
+                  title="Media"
+                  className="p-2 rounded-full hover:bg-sky-500/10 active:scale-90 transition"
+                  onClick={() => toast('Image upload coming soon!', { icon: '📸' })}
+                >
+                  <BsImage size={18} />
+                </button>
+                <button
+                  type="button"
+                  title="Emoji"
+                  className="p-2 rounded-full hover:bg-sky-500/10 active:scale-90 transition"
+                  onClick={() => setBody((prev) => prev + ' 😊')}
+                >
+                  <BsEmojiSmile size={18} />
+                </button>
+                <button
+                  type="button"
+                  title="Schedule"
+                  className="p-2 rounded-full hover:bg-sky-500/10 active:scale-90 transition hidden sm:block"
+                >
+                  <BsCalendarEvent size={18} />
+                </button>
+                <button
+                  type="button"
+                  title="Location"
+                  className="p-2 rounded-full hover:bg-sky-500/10 active:scale-90 transition hidden sm:block"
+                >
+                  <BsGeoAlt size={18} />
+                </button>
+              </div>
+
+              {/* Submit Post Button */}
+              <button
+                disabled={isLoading || !body.trim()}
+                onClick={onSubmit}
+                className="
+                  bg-sky-500 
+                  hover:bg-sky-600 
+                  disabled:opacity-50 
+                  disabled:cursor-not-allowed
+                  text-white 
+                  font-bold 
+                  text-sm 
+                  px-5 
+                  py-2 
+                  rounded-full 
+                  shadow-sm 
+                  active:scale-95 
+                  transition
+              ">
+                {isLoading ? 'Posting...' : isComment ? 'Reply' : 'Post'}
+              </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="py-8">
-          <h1 className="text-neutral-900 dark:text-white text-2xl text-center mb-4 font-bold">Welcome to Twitter</h1>
-          <div className="flex flex-row items-center justify-center gap-4">
-            <Button label="Login" onClick={loginModal.onOpen} />
-            <Button label="Register" onClick={registerModal.onOpen} secondary />
+        <div className="py-6 px-3 text-center space-y-3">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+            Join the conversation
+          </h2>
+          <p className="text-neutral-500 text-sm max-w-md mx-auto">
+            Log in or create an account to share posts, reply, like, and follow people.
+          </p>
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <Button label="Sign in" onClick={loginModal.onOpen} />
+            <Button label="Create account" onClick={registerModal.onOpen} secondary />
           </div>
         </div>
       )}

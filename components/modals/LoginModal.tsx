@@ -20,14 +20,18 @@ const LoginModal = () => {
     try {
       setIsLoading(true);
 
-      await signIn('credentials', {
+      const result = await signIn('credentials', {
         email,
         password,
+        redirect: false,
       });
 
-      toast.success('Logged in');
-
-      loginModal.onClose();
+      if (result?.error) {
+        toast.error('Invalid email or password');
+      } else {
+        toast.success('Welcome back!');
+        loginModal.onClose();
+      }
     } catch (error) {
       toast.error('Something went wrong');
     } finally {
@@ -38,54 +42,58 @@ const LoginModal = () => {
   const onToggle = useCallback(() => {
     loginModal.onClose();
     registerModal.onOpen();
-  }, [loginModal, registerModal])
+  }, [loginModal, registerModal]);
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Input 
-        placeholder="Email"
+        label="Email"
+        placeholder="Enter your email"
         onChange={(e) => setEmail(e.target.value)}
         value={email}
         disabled={isLoading}  
       />
       <Input 
-        placeholder="Password"
+        label="Password"
+        placeholder="Enter your password"
         type="password"
         onChange={(e) => setPassword(e.target.value)}
         value={password}
         disabled={isLoading} 
       />
     </div>
-  )
+  );
 
   const footerContent = (
-    <div className="text-neutral-500 text-center mt-4">
-      <p>First time using Twitter?{' '}
+    <div className="text-neutral-500 text-center text-sm pt-2">
+      <p>Don&apos;t have an account?{' '}
         <span 
           onClick={onToggle} 
           className="
             text-sky-500 
             cursor-pointer 
             hover:underline
-            font-medium
+            font-semibold
           "
-          >Create an account</span>
+        >
+          Sign up
+        </span>
       </p>
     </div>
-  )
+  );
 
   return (
     <Modal
       disabled={isLoading}
       isOpen={loginModal.isOpen}
-      title="Login"
-      actionLabel="Sign in"
+      title="Sign in to Twitter"
+      actionLabel={isLoading ? "Signing in..." : "Sign in"}
       onClose={loginModal.onClose}
       onSubmit={onSubmit}
       body={bodyContent}
       footer={footerContent}
     />
   );
-}
+};
 
 export default LoginModal;

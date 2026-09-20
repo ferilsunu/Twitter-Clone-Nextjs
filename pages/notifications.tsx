@@ -1,6 +1,6 @@
+import Head from "next/head";
 import Header from "@/components/Header";
 import NotificationsFeed from "@/components/NotificationsFeed";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import { NextPageContext } from "next";
 import { getSession } from "next-auth/react";
 
@@ -26,10 +26,13 @@ export async function getServerSideProps(context: NextPageContext) {
 const Notifications = () => {
   return ( 
     <>
+      <Head>
+        <title>Notifications / Twitter</title>
+      </Head>
       <Header showBackArrow label="Notifications" />
       <NotificationsFeed />
     </>
-   );
-}
- 
+  );
+};
+
 export default Notifications;
