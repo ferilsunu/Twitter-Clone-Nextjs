@@ -21,7 +21,11 @@ const FollowUserRow: React.FC<{ user: Record<string, any> }> = ({ user }) => {
         onClick={() => router.push(`/users/${user.id}`)}
         className="flex items-center gap-3 min-w-0 flex-1"
       >
-        <Avatar userId={user.id} />
+        <Avatar 
+          userId={user.id} 
+          profileImage={user.profileImage}
+          user={user}
+        />
         <div className="flex flex-col min-w-0">
           <div className="flex items-center gap-1">
             <span className="text-neutral-900 dark:text-white font-bold text-sm truncate hover:underline">

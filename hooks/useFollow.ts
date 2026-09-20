@@ -1,51 +1,95 @@
 import axios from "axios";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
+import { mutate } from "swr";
 
 import useCurrentUser from "./useCurrentUser";
 import useLoginModal from "./useLoginModal";
 import useUser from "./useUser";
 
 const useFollow = (userId: string) => {
-  const { data: currentUser, mutate: mutateCurrentUser } = useCurrentUser();
-  const { mutate: mutateFetchedUser } = useUser(userId);
-
+  const { data: currentUser } = useCurrentUser();
+  const { data: fetchedUser } = useUser(userId);
   const loginModal = useLoginModal();
 
-  const isFollowing = useMemo(() => {
+  const serverIsFollowing = useMemo(() => {
     const list = currentUser?.followingIds || [];
-
     return list.includes(userId);
-  }, [currentUser, userId]);
+  }, [currentUser?.followingIds, userId]);
+
+  const [isFollowing, setIsFollowing] = useState<boolean>(serverIsFollowing);
+
+  useEffect(() => {
+    setIsFollowing(serverIsFollowing);
+  }, [serverIsFollowing]);
 
   const toggleFollow = useCallback(async () => {
     if (!currentUser) {
       return loginModal.onOpen();
     }
 
-    try {
-      let request;
+    const previousIsFollowing = isFollowing;
+    const newIsFollowing = !previousIsFollowing;
 
-      if (isFollowing) {
-        request = () => axios.delete('/api/follow', { data: { userId } });
+    // Instant optimistic toggle
+    setIsFollowing(newIsFollowing);
+
+    // Optimistic SWR cache updates
+    mutate(
+      '/api/current',
+      (curr: any) => {
+        if (!curr) return curr;
+        const currentFollowing: string[] = curr.followingIds || [];
+        return {
+          ...curr,
+          followingIds: newIsFollowing
+            ? [...currentFollowing, userId]
+            : currentFollowing.filter((id) => id !== userId),
+        };
+      },
+      false
+    );
+
+    mutate(
+      `/api/users/${userId}`,
+      (user: any) => {
+        if (!user) return user;
+        const currentFollowers = user.followersCount || 0;
+        return {
+          ...user,
+          followersCount: newIsFollowing
+            ? currentFollowers + 1
+            : Math.max(0, currentFollowers - 1),
+        };
+      },
+      false
+    );
+
+    try {
+      if (previousIsFollowing) {
+        await axios.delete('/api/follow', { data: { userId } });
       } else {
-        request = () => axios.post('/api/follow', { userId });
+        await axios.post('/api/follow', { userId });
       }
 
-      await request();
-      mutateCurrentUser();
-      mutateFetchedUser();
-
-      toast.success('Success');
+      // Invalidate to ensure consistency
+      mutate('/api/current');
+      mutate(`/api/users/${userId}`);
+      mutate('/api/users');
     } catch (error) {
-      toast.error('Something went wrong');
+      // Rollback on failure
+      setIsFollowing(previousIsFollowing);
+      mutate('/api/current');
+      mutate(`/api/users/${userId}`);
+      mutate('/api/users');
+      toast.error('Could not update follow status');
     }
-  }, [currentUser, isFollowing, userId, mutateCurrentUser, mutateFetchedUser, loginModal]);
+  }, [currentUser, isFollowing, userId, loginModal]);
 
   return {
     isFollowing,
     toggleFollow,
-  }
-}
+  };
+};
 
 export default useFollow;

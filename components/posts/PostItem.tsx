@@ -21,15 +21,23 @@ const PostItem: React.FC<PostItemProps> = ({ data = {}, userId }) => {
   const loginModal = useLoginModal();
 
   const { data: currentUser } = useCurrentUser();
-  const { hasLiked, toggleLike } = useLike({ postId: data.id, userId });
+  const { hasLiked, likesCount, toggleLike } = useLike({
+    postId: data.id,
+    userId,
+    likedIds: data.likedIds || [],
+  });
 
   const goToUser = useCallback((ev: any) => {
     ev.stopPropagation();
-    router.push(`/users/${data.user.id}`);
+    if (data.user?.id) {
+      router.push(`/users/${data.user.id}`);
+    }
   }, [router, data.user?.id]);
 
   const goToPost = useCallback(() => {
-    router.push(`/posts/${data.id}`);
+    if (data.id) {
+      router.push(`/posts/${data.id}`);
+    }
   }, [router, data.id]);
 
   const onLike = useCallback(async (ev: any) => {
@@ -59,7 +67,11 @@ const PostItem: React.FC<PostItemProps> = ({ data = {}, userId }) => {
     if (!data?.createdAt) {
       return null;
     }
-    return formatDistanceToNowStrict(new Date(data.createdAt), { addSuffix: false });
+    try {
+      return formatDistanceToNowStrict(new Date(data.createdAt), { addSuffix: false });
+    } catch {
+      return null;
+    }
   }, [data.createdAt]);
 
   const LikeIcon = hasLiked ? AiFillHeart : AiOutlineHeart;
@@ -82,9 +94,13 @@ const PostItem: React.FC<PostItemProps> = ({ data = {}, userId }) => {
         cursor-pointer
     ">
       <div className="flex gap-3 sm:gap-3.5">
-        {/* Author Avatar */}
+        {/* Author Avatar - passed user data directly */}
         <div className="flex-shrink-0 pt-0.5">
-          <Avatar userId={data.user?.id} />
+          <Avatar
+            userId={data.user?.id}
+            profileImage={data.user?.profileImage}
+            user={data.user}
+          />
         </div>
 
         {/* Post Content & Meta */}
@@ -128,6 +144,7 @@ const PostItem: React.FC<PostItemProps> = ({ data = {}, userId }) => {
                 e.stopPropagation();
                 onShare(e);
               }}
+              title="More options"
             >
               <FiMoreHorizontal size={16} />
             </button>
@@ -177,7 +194,7 @@ const PostItem: React.FC<PostItemProps> = ({ data = {}, userId }) => {
               <span className="text-xs">0</span>
             </div>
 
-            {/* Like */}
+            {/* Like with Instant Feedback */}
             <div
               onClick={onLike}
               className={`
@@ -190,11 +207,11 @@ const PostItem: React.FC<PostItemProps> = ({ data = {}, userId }) => {
                 ${hasLiked ? 'text-rose-500' : 'hover:text-rose-500'}
               `}
             >
-              <div className={`p-2 rounded-full group-hover:bg-rose-500/10 transition ${hasLiked ? 'animate-heart' : ''}`}>
-                <LikeIcon size={18} className={hasLiked ? 'text-rose-500' : ''} />
+              <div className={`p-2 rounded-full group-hover:bg-rose-500/10 transition ${hasLiked ? 'scale-110' : ''}`}>
+                <LikeIcon size={18} className={hasLiked ? 'text-rose-500 fill-rose-500' : ''} />
               </div>
               <span className={`text-xs ${hasLiked ? 'text-rose-500 font-semibold' : ''}`}>
-                {data.likedIds?.length || 0}
+                {likesCount}
               </span>
             </div>
 

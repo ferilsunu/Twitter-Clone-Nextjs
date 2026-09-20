@@ -4,7 +4,7 @@ import fetcher from '@/libs/fetcher';
 const useUsers = () => {
   const { data, error, isLoading, mutate } = useSWR('/api/users', fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 15000,
+    dedupingInterval: 5000,
   });
 
   return {

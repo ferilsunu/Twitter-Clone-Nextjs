@@ -1,9 +1,11 @@
 import { signIn } from "next-auth/react";
 import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
+import { mutate } from "swr";
 
 import useLoginModal from "@/hooks/useLoginModal";
 import useRegisterModal from "@/hooks/useRegisterModal";
+import useCurrentUser from "@/hooks/useCurrentUser";
 
 import Input from "../Input";
 import Modal from "../Modal";
@@ -11,17 +13,23 @@ import Modal from "../Modal";
 const LoginModal = () => {
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
+  const { mutate: mutateCurrentUser } = useCurrentUser();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = useCallback(async () => {
+    if (!email.trim() || !password.trim()) {
+      toast.error('Please enter email and password');
+      return;
+    }
+
     try {
       setIsLoading(true);
 
       const result = await signIn('credentials', {
-        email,
+        email: email.trim(),
         password,
         redirect: false,
       });
@@ -30,25 +38,36 @@ const LoginModal = () => {
         toast.error('Invalid email or password');
       } else {
         toast.success('Welcome back!');
+        setEmail('');
+        setPassword('');
         loginModal.onClose();
+
+        // Refresh authentication and feed state immediately
+        await mutateCurrentUser();
+        mutate('/api/current');
+        mutate('/api/posts');
+        mutate('/api/users');
+        mutate('/api/notifications');
       }
     } catch (error) {
       toast.error('Something went wrong');
     } finally {
       setIsLoading(false);
     }
-  }, [email, password, loginModal]);
+  }, [email, password, loginModal, mutateCurrentUser]);
 
   const onToggle = useCallback(() => {
+    if (isLoading) return;
     loginModal.onClose();
     registerModal.onOpen();
-  }, [loginModal, registerModal]);
+  }, [loginModal, registerModal, isLoading]);
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Input 
         label="Email"
         placeholder="Enter your email"
+        type="email"
         onChange={(e) => setEmail(e.target.value)}
         value={email}
         disabled={isLoading}  

@@ -13,21 +13,31 @@ const CommentItem: React.FC<CommentItemProps> = ({ data = {} }) => {
 
   const goToUser = useCallback((ev: any) => {
     ev.stopPropagation();
-    router.push(`/users/${data.user?.id}`);
+    if (data.user?.id) {
+      router.push(`/users/${data.user.id}`);
+    }
   }, [router, data.user?.id]);
 
   const createdAt = useMemo(() => {
     if (!data?.createdAt) {
       return null;
     }
-    return formatDistanceToNowStrict(new Date(data.createdAt), { addSuffix: false });
+    try {
+      return formatDistanceToNowStrict(new Date(data.createdAt), { addSuffix: false });
+    } catch {
+      return null;
+    }
   }, [data.createdAt]);
 
   return (
     <div className="border-b border-neutral-200 dark:border-neutral-800 px-4 py-3 sm:px-5 sm:py-3.5 hover:bg-neutral-50/70 dark:hover:bg-neutral-900/40 transition-colors">
       <div className="flex gap-3">
         <div className="flex-shrink-0 pt-0.5">
-          <Avatar userId={data.user?.id} />
+          <Avatar 
+            userId={data.user?.id}
+            profileImage={data.user?.profileImage}
+            user={data.user}
+          />
         </div>
 
         <div className="flex-1 min-w-0">

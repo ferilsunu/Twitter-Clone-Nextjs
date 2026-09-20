@@ -1,8 +1,11 @@
 import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { useCallback } from 'react';
 import { BiLogOut } from 'react-icons/bi';
 import { BsHouseFill, BsBellFill, BsSunFill, BsMoonFill } from 'react-icons/bs';
 import { FaUser } from 'react-icons/fa';
-import { FiMoreHorizontal } from 'react-icons/fi';
+import { mutate } from 'swr';
+import { toast } from 'react-hot-toast';
 
 import useCurrentUser from '@/hooks/useCurrentUser';
 import useTheme from '@/hooks/useTheme';
@@ -13,9 +16,26 @@ import SidebarTweetButton from './SidebarTweetButton';
 import Avatar from '../Avatar';
 
 const Sidebar = () => {
+  const router = useRouter();
   const { data: currentUser } = useCurrentUser();
   const theme = useTheme((state) => state.theme);
   const toggleTheme = useTheme((state) => state.toggleTheme);
+
+  const handleLogout = useCallback(async () => {
+    try {
+      await signOut({ redirect: false });
+      mutate('/api/current', null, false);
+      mutate('/api/posts');
+      mutate('/api/users');
+      mutate('/api/notifications', [], false);
+      toast.success('Signed out');
+      if (router.pathname === '/notifications' || router.pathname.startsWith('/users')) {
+        router.push('/');
+      }
+    } catch {
+      signOut();
+    }
+  }, [router]);
 
   const items = [
     {
@@ -75,7 +95,7 @@ const Sidebar = () => {
       {/* Bottom User Card / Logout */}
       {currentUser && (
         <div 
-          onClick={() => signOut()}
+          onClick={handleLogout}
           title="Click to Logout"
           className="
             flex 
@@ -93,7 +113,11 @@ const Sidebar = () => {
             w-full
         ">
           <div className="flex items-center gap-3 min-w-0">
-            <Avatar userId={currentUser.id} />
+            <Avatar 
+              userId={currentUser.id} 
+              profileImage={currentUser.profileImage}
+              user={currentUser}
+            />
             <div className="hidden xl:flex flex-col min-w-0">
               <span className="text-neutral-900 dark:text-white font-bold text-sm truncate">
                 {currentUser.name}

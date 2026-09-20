@@ -51,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "GET") {
       const { userId } = req.query;
 
-      res.setHeader('Cache-Control', 's-maxage=2, stale-while-revalidate=10');
+      res.setHeader('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
 
       let posts;
 

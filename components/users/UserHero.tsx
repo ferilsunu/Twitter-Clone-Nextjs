@@ -24,6 +24,7 @@ const UserHero: React.FC<UserHeroProps> = ({ userId }) => {
           <Image
             src={fetchedUser.coverImage}
             fill
+            unoptimized
             alt=""
             style={{ objectFit: 'cover' }}
             priority
@@ -34,7 +35,13 @@ const UserHero: React.FC<UserHeroProps> = ({ userId }) => {
 
       {/* Overlapping Avatar */}
       <div className="absolute -bottom-14 sm:-bottom-18 left-4 sm:left-6 z-10">
-        <Avatar userId={userId} isLarge hasBorder />
+        <Avatar 
+          userId={userId} 
+          profileImage={fetchedUser?.profileImage}
+          user={fetchedUser}
+          isLarge 
+          hasBorder 
+        />
       </div>
     </div>
   );
