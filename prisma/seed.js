@@ -17,6 +17,25 @@ function randomInt(min, max) {
 }
 // Subsets of avatar styles for variety
 const AVATAR_STYLES = ['avataaars', 'bottts', 'personas', 'lorelei', 'micah', 'thumbs'];
+const WORKING_COVER_BANNERS = [
+    "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1607799279861-4dd421887fb3?w=800&h=260&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&h=260&fit=crop&q=80"
+];
 const RAW_USERS_DATA = [
     {
         name: "Elena Rostova",
@@ -288,7 +307,7 @@ async function main() {
             username: username,
             bio: `${role}. ${interest}`,
             avatar: `https://api.dicebear.com/7.x/${avatarStyle}/svg?seed=${username}`,
-            cover: i % 3 === 0 ? `https://images.unsplash.com/photo-${1500000000000 + i * 10000}?w=800&h=260&fit=crop&q=80` : undefined,
+            cover: i % 3 === 0 ? WORKING_COVER_BANNERS[i % WORKING_COVER_BANNERS.length] : undefined,
         });
     }
     console.log(`Prepared ${usersToCreate.length} user definitions.`);
