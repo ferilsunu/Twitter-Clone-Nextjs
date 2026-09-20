@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { BiSearch } from 'react-icons/bi';
 import { BsCheckCircleFill } from 'react-icons/bs';
@@ -62,7 +63,22 @@ const FollowUserRow: React.FC<{ user: Record<string, any> }> = ({ user }) => {
 
 const FollowBar = () => {
   const router = useRouter();
+  const { data: currentUser } = useCurrentUser();
   const { data: users = [] } = useUsers();
+
+  // Filter out current logged in user and pick up to 5 suggested users
+  const suggestedUsers = useMemo(() => {
+    const pool = users.filter((u: any) => u.id !== currentUser?.id);
+    return pool.slice(0, 5);
+  }, [users, currentUser?.id]);
+
+  const trendingTopics = [
+    { category: 'Technology · Trending', tag: '#Nextjs15', posts: '128.4K posts' },
+    { category: 'Artificial Intelligence · Trending', tag: '#AI', posts: '245.9K posts' },
+    { category: 'Frontend Development · Trending', tag: '#TypeScript', posts: '98.2K posts' },
+    { category: 'Web Design · Trending', tag: '#TailwindCSS', posts: '74.6K posts' },
+    { category: 'Open Source · Trending', tag: '#OpenSource', posts: '162.1K posts' },
+  ];
 
   return (
     <div className="space-y-4">
@@ -76,7 +92,8 @@ const FollowBar = () => {
             className="w-full bg-transparent pl-11 pr-4 py-2.5 text-sm text-neutral-900 dark:text-white placeholder-neutral-400 outline-none"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                router.push('/search');
+                const val = e.currentTarget.value.trim();
+                router.push(val ? `/search?q=${encodeURIComponent(val)}` : '/search');
               }
             }}
           />
@@ -84,13 +101,15 @@ const FollowBar = () => {
       </div>
 
       {/* "Who to follow" Widget Card */}
-      {users.length > 0 && (
+      {suggestedUsers.length > 0 && (
         <div className="bg-neutral-50/80 dark:bg-neutral-900/60 border border-neutral-200/70 dark:border-neutral-800 rounded-2xl p-4">
-          <h2 className="text-neutral-900 dark:text-white text-lg font-bold tracking-tight mb-2">
-            Who to follow
-          </h2>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-neutral-900 dark:text-white text-lg font-bold tracking-tight">
+              Who to follow
+            </h2>
+          </div>
           <div className="flex flex-col divide-y divide-neutral-100 dark:divide-neutral-800/60">
-            {users.slice(0, 5).map((user: Record<string, any>) => (
+            {suggestedUsers.map((user: Record<string, any>) => (
               <FollowUserRow key={user.id} user={user} />
             ))}
           </div>
@@ -98,29 +117,23 @@ const FollowBar = () => {
       )}
 
       {/* "Trends for you" Widget Card */}
-      <div className="bg-neutral-50/80 dark:bg-neutral-900/60 border border-neutral-200/70 dark:border-neutral-800 rounded-2xl p-4 space-y-3">
+      <div className="bg-neutral-50/80 dark:bg-neutral-900/60 border border-neutral-200/70 dark:border-neutral-800 rounded-2xl p-4 space-y-2">
         <h2 className="text-neutral-900 dark:text-white text-lg font-bold tracking-tight">
           What&apos;s happening
         </h2>
         
-        <div className="space-y-3 text-sm">
-          <div className="hover:bg-neutral-100/60 dark:hover:bg-neutral-800/40 -mx-2 p-2 rounded-xl transition cursor-pointer">
-            <p className="text-xs text-neutral-500">Technology · Trending</p>
-            <p className="font-bold text-neutral-900 dark:text-white">#Nextjs14</p>
-            <p className="text-xs text-neutral-500">48.2K posts</p>
-          </div>
-
-          <div className="hover:bg-neutral-100/60 dark:hover:bg-neutral-800/40 -mx-2 p-2 rounded-xl transition cursor-pointer">
-            <p className="text-xs text-neutral-500">Web Development · Trending</p>
-            <p className="font-bold text-neutral-900 dark:text-white">TypeScript & Tailwind</p>
-            <p className="text-xs text-neutral-500">124.5K posts</p>
-          </div>
-
-          <div className="hover:bg-neutral-100/60 dark:hover:bg-neutral-800/40 -mx-2 p-2 rounded-xl transition cursor-pointer">
-            <p className="text-xs text-neutral-500">AI & Engineering · Trending</p>
-            <p className="font-bold text-neutral-900 dark:text-white">#OpenAI & Gemini</p>
-            <p className="text-xs text-neutral-500">89.1K posts</p>
-          </div>
+        <div className="space-y-1 text-sm">
+          {trendingTopics.map((item) => (
+            <div
+              key={item.tag}
+              onClick={() => router.push(`/search?q=${encodeURIComponent(item.tag)}`)}
+              className="hover:bg-neutral-100/70 dark:hover:bg-neutral-800/50 -mx-2 p-2.5 rounded-xl transition cursor-pointer"
+            >
+              <p className="text-xs text-neutral-500">{item.category}</p>
+              <p className="font-bold text-neutral-900 dark:text-white text-[15px]">{item.tag}</p>
+              <p className="text-xs text-neutral-500">{item.posts}</p>
+            </div>
+          ))}
         </div>
       </div>
 

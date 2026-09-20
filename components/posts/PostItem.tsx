@@ -9,6 +9,7 @@ import useLoginModal from '@/hooks/useLoginModal';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import useLike from '@/hooks/useLike';
 import Avatar from '../Avatar';
+import FormattedText from '@/libs/formatText';
 
 interface PostItemProps {
   data: Record<string, any>;
@@ -133,9 +134,9 @@ const PostItem: React.FC<PostItemProps> = ({ data = {}, userId }) => {
           </div>
 
           {/* Tweet Body Text */}
-          <p className="text-neutral-900 dark:text-neutral-100 text-[15px] sm:text-[15.5px] leading-normal break-words whitespace-pre-line select-text">
-            {data.body}
-          </p>
+          <div className="text-neutral-900 dark:text-neutral-100 text-[15px] sm:text-[15.5px] leading-normal break-words whitespace-pre-line select-text">
+            <FormattedText text={data.body} />
+          </div>
 
           {/* Action Row */}
           <div className="flex items-center justify-between max-w-md mt-3 -ml-2 text-neutral-500 text-xs sm:text-sm">

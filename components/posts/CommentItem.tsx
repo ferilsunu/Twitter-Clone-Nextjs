@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import { useCallback, useMemo } from 'react';
 import { formatDistanceToNowStrict } from 'date-fns';
 import Avatar from '../Avatar';
+import FormattedText from '@/libs/formatText';
 
 interface CommentItemProps {
   data: Record<string, any>;
@@ -60,9 +61,9 @@ const CommentItem: React.FC<CommentItemProps> = ({ data = {} }) => {
             </span>
           </div>
 
-          <p className="text-neutral-900 dark:text-neutral-100 text-[14.5px] sm:text-[15px] leading-relaxed break-words whitespace-pre-line select-text">
-            {data.body}
-          </p>
+          <div className="text-neutral-900 dark:text-neutral-100 text-[14.5px] sm:text-[15px] leading-relaxed break-words whitespace-pre-line select-text">
+            <FormattedText text={data.body} />
+          </div>
         </div>
       </div>
     </div>
