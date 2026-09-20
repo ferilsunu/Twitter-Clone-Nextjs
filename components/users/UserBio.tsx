@@ -31,7 +31,7 @@ const UserBio: React.FC<UserBioProps> = ({ userId }) => {
 
 
   return ( 
-    <div className="border-b-[1px] border-neutral-800 pb-4">
+    <div className="border-b-[1px] border-neutral-200 dark:border-neutral-800 pb-4 transition-colors">
       <div className="flex justify-end p-2">
         {currentUser?.id === userId ? (
           <Button secondary label="Edit" onClick={editModal.onOpen} />
@@ -46,7 +46,7 @@ const UserBio: React.FC<UserBioProps> = ({ userId }) => {
       </div>
       <div className="mt-8 px-4">
         <div className="flex flex-col">
-          <p className="text-white text-2xl font-semibold">
+          <p className="text-neutral-900 dark:text-white text-2xl font-bold">
             {fetchedUser?.name}
           </p>
           <p className="text-md text-neutral-500">
@@ -54,7 +54,7 @@ const UserBio: React.FC<UserBioProps> = ({ userId }) => {
           </p>
         </div>
         <div className="flex flex-col mt-4">
-          <p className="text-white">
+          <p className="text-neutral-800 dark:text-neutral-200">
             {fetchedUser?.bio}
           </p>
           <div 
@@ -66,20 +66,20 @@ const UserBio: React.FC<UserBioProps> = ({ userId }) => {
               mt-4 
               text-neutral-500
           ">
-            <BiCalendar size={24} />
-            <p>
+            <BiCalendar size={22} />
+            <p className="text-sm">
               Joined {createdAt}
             </p>
           </div>
         </div>
         <div className="flex flex-row items-center mt-4 gap-6">
           <div className="flex flex-row items-center gap-1">
-            <p className="text-white">{fetchedUser?.followingIds?.length}</p>
-            <p className="text-neutral-500">Following</p>
+            <p className="text-neutral-900 dark:text-white font-bold">{fetchedUser?.followingIds?.length || 0}</p>
+            <p className="text-neutral-500 text-sm">Following</p>
           </div>
           <div className="flex flex-row items-center gap-1">
-            <p className="text-white">{fetchedUser?.followersCount || 0}</p>
-            <p className="text-neutral-500">Followers</p>
+            <p className="text-neutral-900 dark:text-white font-bold">{fetchedUser?.followersCount || 0}</p>
+            <p className="text-neutral-500 text-sm">Followers</p>
           </div>
         </div>
       </div>

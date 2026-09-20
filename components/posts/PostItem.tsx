@@ -8,6 +8,7 @@ import useCurrentUser from '@/hooks/useCurrentUser';
 import useLike from '@/hooks/useLike';
 
 import Avatar from '../Avatar';
+
 interface PostItemProps {
   data: Record<string, any>;
   userId?: string;
@@ -47,27 +48,30 @@ const PostItem: React.FC<PostItemProps> = ({ data = {}, userId }) => {
     }
 
     return formatDistanceToNowStrict(new Date(data.createdAt));
-  }, [data.createdAt])
+  }, [data.createdAt]);
 
   return (
     <div 
       onClick={goToPost}
       className="
         border-b-[1px] 
-        border-neutral-800 
+        border-neutral-200 
+        dark:border-neutral-800 
         p-5 
         cursor-pointer 
-        hover:bg-neutral-900 
+        hover:bg-neutral-100/60 
+        dark:hover:bg-neutral-900/60 
         transition
       ">
       <div className="flex flex-row items-start gap-3">
         <Avatar userId={data.user.id} />
-        <div>
+        <div className="w-full">
           <div className="flex flex-row items-center gap-2">
             <p 
               onClick={goToUser} 
               className="
-                text-white 
+                text-neutral-900 
+                dark:text-white 
                 font-semibold 
                 cursor-pointer 
                 hover:underline
@@ -85,11 +89,11 @@ const PostItem: React.FC<PostItemProps> = ({ data = {}, userId }) => {
             ">
               @{data.user.username}
             </span>
-            <span className="text-neutral-500 text-sm">
-              {createdAt}
+            <span className="text-neutral-400 dark:text-neutral-500 text-sm">
+              · {createdAt}
             </span>
           </div>
-          <div className="text-white mt-1">
+          <div className="text-neutral-800 dark:text-neutral-200 mt-1 break-words">
             {data.body}
           </div>
           <div className="flex flex-row items-center mt-3 gap-10">
@@ -104,8 +108,8 @@ const PostItem: React.FC<PostItemProps> = ({ data = {}, userId }) => {
                 transition 
                 hover:text-sky-500
             ">
-              <AiOutlineMessage size={20} />
-              <p>
+              <AiOutlineMessage size={18} />
+              <p className="text-sm">
                 {data.comments?.length || 0}
               </p>
             </div>
@@ -121,8 +125,8 @@ const PostItem: React.FC<PostItemProps> = ({ data = {}, userId }) => {
                 transition 
                 hover:text-red-500
             ">
-              <LikeIcon color={hasLiked ? 'red' : ''} size={20} />
-              <p>
+              <LikeIcon color={hasLiked ? '#ef4444' : undefined} size={18} className={hasLiked ? 'text-red-500' : ''} />
+              <p className={`text-sm ${hasLiked ? 'text-red-500' : ''}`}>
                 {data.likedIds.length}
               </p>
             </div>

@@ -15,11 +15,13 @@ const SidebarLogo = () => {
         flex 
         items-center 
         justify-center 
-        hover:bg-blue-300 
-        hover:bg-opacity-10 
+        hover:bg-sky-100 
+        dark:hover:bg-sky-900 
+        dark:hover:bg-opacity-30 
         cursor-pointer
+        transition
     ">
-      <BsTwitter size={28} color="white" />
+      <BsTwitter size={28} className="text-sky-500" />
     </div>
   );
 };

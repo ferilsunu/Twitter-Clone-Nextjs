@@ -29,20 +29,22 @@ const CommentItem: React.FC<CommentItemProps> = ({ data = {} }) => {
     <div 
       className="
         border-b-[1px] 
-        border-neutral-800 
+        border-neutral-200 
+        dark:border-neutral-800 
         p-5 
-        cursor-pointer 
-        hover:bg-neutral-900 
+        hover:bg-neutral-100/60 
+        dark:hover:bg-neutral-900/60 
         transition
       ">
       <div className="flex flex-row items-start gap-3">
         <Avatar userId={data.user.id} />
-        <div>
+        <div className="w-full">
           <div className="flex flex-row items-center gap-2">
             <p 
               onClick={goToUser} 
               className="
-                text-white 
+                text-neutral-900 
+                dark:text-white 
                 font-semibold 
                 cursor-pointer 
                 hover:underline
@@ -60,11 +62,11 @@ const CommentItem: React.FC<CommentItemProps> = ({ data = {} }) => {
             ">
               @{data.user.username}
             </span>
-            <span className="text-neutral-500 text-sm">
-              {createdAt}
+            <span className="text-neutral-400 dark:text-neutral-500 text-sm">
+              · {createdAt}
             </span>
           </div>
-          <div className="text-white mt-1">
+          <div className="text-neutral-800 dark:text-neutral-200 mt-1 break-words">
             {data.body}
           </div>
         </div>

@@ -3,9 +3,13 @@
 @tailwind utilities;
 
 :root {
-  @apply h-full bg-black
+  @apply h-full bg-white text-neutral-900;
+}
+
+:root.dark {
+  @apply bg-black text-white;
 }
 
 body {
-  @apply h-full bg-black
+  @apply h-full bg-white text-neutral-900 dark:bg-black dark:text-white transition-colors duration-150;
 }

@@ -48,8 +48,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit, title, body, a
           z-50 
           outline-none 
           focus:outline-none
-          bg-neutral-800
-          bg-opacity-70
+          bg-neutral-900/60
+          dark:bg-neutral-900/80
+          backdrop-blur-xs
         "
       >
         <div className="relative w-full lg:w-3/6 my-6 mx-auto lg:max-w-3xl h-full lg:h-auto">
@@ -57,14 +58,17 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit, title, body, a
           <div className="
             h-full
             lg:h-auto
-            border-0 
-            rounded-lg 
-            shadow-lg 
+            border
+            border-neutral-200
+            dark:border-neutral-800
+            rounded-2xl 
+            shadow-2xl 
             relative 
             flex 
             flex-col 
             w-full 
-            bg-black 
+            bg-white 
+            dark:bg-black 
             outline-none 
             focus:outline-none
             "
@@ -74,11 +78,15 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit, title, body, a
               flex 
               items-center 
               justify-between 
-              p-10 
+              p-6
+              md:p-8 
               rounded-t
+              border-b
+              border-neutral-100
+              dark:border-neutral-800
               "
             >
-              <h3 className="text-3xl font-semibold text-white">
+              <h3 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white">
                 {title}
               </h3>
               <button
@@ -86,7 +94,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit, title, body, a
                   p-1 
                   ml-auto
                   border-0 
-                  text-white 
+                  text-neutral-500 
+                  hover:text-neutral-900
+                  dark:text-neutral-400
+                  dark:hover:text-white 
                   hover:opacity-70
                   transition
                 "
@@ -96,11 +107,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit, title, body, a
               </button>
             </div>
             {/*body*/}
-            <div className="relative p-10 flex-auto">
+            <div className="relative p-6 md:p-8 flex-auto">
               {body}
             </div>
             {/*footer*/}
-            <div className="flex flex-col gap-2 p-10">
+            <div className="flex flex-col gap-2 p-6 md:p-8 pt-0">
               <Button disabled={disabled} label={actionLabel} secondary fullWidth large onClick={handleSubmit} />
               {footer}
             </div>

@@ -26,7 +26,7 @@ const Avatar: React.FC<AvatarProps> = ({ userId, isLarge, hasBorder }) => {
   return (
     <div
       className={`
-        ${hasBorder ? 'border-4 border-black' : ''}
+        ${hasBorder ? 'border-4 border-white dark:border-black shadow-md' : ''}
         ${isLarge ? 'h-32' : 'h-12'}
         ${isLarge ? 'w-32' : 'w-12'}
         rounded-full 
@@ -34,6 +34,8 @@ const Avatar: React.FC<AvatarProps> = ({ userId, isLarge, hasBorder }) => {
         transition 
         cursor-pointer
         relative
+        bg-neutral-200
+        dark:bg-neutral-800
       `}
     >
       <Image

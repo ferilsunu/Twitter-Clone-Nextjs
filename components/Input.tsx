@@ -10,7 +10,7 @@ interface InputProps {
 const Input: React.FC<InputProps> = ({ placeholder, value, type = "text", onChange, disabled, label }) => {
   return (
     <div className="w-full">
-      {label && <p className="text-xl text-white font-semibold mb-2">{label}</p>}
+      {label && <p className="text-xl text-neutral-900 dark:text-white font-semibold mb-2">{label}</p>}
       <input
         disabled={disabled}
         onChange={onChange}
@@ -21,16 +21,22 @@ const Input: React.FC<InputProps> = ({ placeholder, value, type = "text", onChan
           w-full
           p-4 
           text-lg 
-          bg-black 
+          bg-neutral-50
+          dark:bg-black 
           border-2
-          border-neutral-800 
+          border-neutral-200 
+          dark:border-neutral-800 
           rounded-md
           outline-none
-          text-white
+          text-neutral-900
+          dark:text-white
+          placeholder-neutral-400
+          dark:placeholder-neutral-500
           focus:border-sky-500
           focus:border-2
           transition
-          disabled:bg-neutral-900
+          disabled:bg-neutral-100
+          dark:disabled:bg-neutral-900
           disabled:opacity-70
           disabled:cursor-not-allowed
         "

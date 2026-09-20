@@ -37,7 +37,7 @@ const ImageUpload: React.FC<DropzoneProps> = ({ onChange, label, value, disabled
   });
 
   return ( 
-    <div {...getRootProps({className: 'w-full p-4 text-white text-center border-2 border-dotted rounded-md border-neutral-700'})}>
+    <div {...getRootProps({className: 'w-full p-4 text-neutral-800 dark:text-white text-center border-2 border-dotted rounded-md border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-900/50 cursor-pointer transition'})}>
       <input {...getInputProps()} />
       {base64 ? (
         <div className="flex items-center justify-center">
@@ -46,10 +46,11 @@ const ImageUpload: React.FC<DropzoneProps> = ({ onChange, label, value, disabled
             height="100"
             width="100"
             alt="Uploaded image"
+            style={{ objectFit: 'cover', borderRadius: '8px' }}
           />
         </div>
       ) : (
-        <p className="text-white">{label}</p>
+        <p className="text-neutral-700 dark:text-neutral-200">{label}</p>
       )}
     </div>
    );

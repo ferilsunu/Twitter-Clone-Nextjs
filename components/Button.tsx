@@ -26,19 +26,13 @@ const Button: React.FC<ButtonProps> = ({
         disabled:cursor-not-allowed
         rounded-full
         font-semibold
-        hover:opacity-80
+        hover:opacity-90
         transition
         border-2
         ${fullWidth ? 'w-full' : 'w-fit'}
-        ${secondary ? 'bg-white' : 'bg-sky-500'}
-        ${secondary ? 'text-black' : 'text-white'}
-        ${secondary ? 'border-black' : 'border-sky-500'}
-        ${large ? 'text-xl' : 'text-md'}
-        ${large ? 'px-5' : 'px-4'}
-        ${large ? 'py-3' : 'py-2'}
-        ${outline ? 'bg-transparent' : ''}
-        ${outline ? 'border-white' : ''}
-        ${outline ? 'text-white' : ''}
+        ${secondary ? 'bg-neutral-900 text-white border-neutral-900 dark:bg-white dark:text-black dark:border-white' : 'bg-sky-500 text-white border-sky-500'}
+        ${large ? 'text-xl px-5 py-3' : 'text-md px-4 py-2'}
+        ${outline ? 'bg-transparent border-neutral-900 text-neutral-900 dark:border-white dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900' : ''}
       `}
     >
       {label}
